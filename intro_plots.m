@@ -2,13 +2,14 @@
 close all %cierro todas las ventanas creadas
 %% ejemplo Señal digital
 figure()
-xej = rand(20,1); %valores al azar
-stem(xej,'linewidth',2)
+f = @(x) sin(x/2+0.2)+1-x/30;
+stem(f(1:15),'linewidth',2)
 hold on
-plot(xej)
-xlim([0.5,20.5])
-ylim([0,1.1])
-xlabel('n')
+xcont = linspace(1,15,300); %pasos chicos simulo continuidad
+plot(xcont,f(xcont))
+xlim([0.5,10.5])
+%ylim([0,1.1])
+xlabel('Tiempo')
 ylabel('x[n]')
 grid on
 legend('Señal Digitalizada','Señal Continua')
@@ -68,8 +69,9 @@ xlim([0.5,10.5])
 legend(sprintf('Continuo'),...
     sprintf('Muestras'),...
     sprintf('Reconstrucción'))
-%%
-%Ejemplo de ploteo usando fftshift de Matlab
+
+%% Ejemplo de ploteo usando fftshift de Matlab
+
 figure()
 N = 21; 
 rand_sig = rand(N,1)-0.5;
@@ -89,34 +91,39 @@ legend([pc, pia],'Periodo obtenido de la serie','Visualizacion usual')
 xlim([-pi-0.2,2*pi+0.5])
 xlabel(sprintf('\\omega'))
 ylabel(sprintf('Abs(F[\\omega])'))
+
+
 %% Ejemplo quejido de ballena azul
+
+try
+    [x,fs] = audioread('whale52.ogg');
+catch
+    disp('descargando archivo...')
+    websave('whale52.ogg','https://en.wikipedia.org/wiki/File:Ak52_10x.ogg')
+    disp('archivo descargado, volver a correr celda')
+end
+%sound(x,fs) %por si quieren escuchar el quejido (esta 10 veces mas rapido de lo real)
 figure()
-%cargo los datos en memoria
-whaleFile = 'bluewhale.au';
-[x,fs] = audioread(whaleFile);
-
-moan = x(2.45e4:2.45e4+8192); %ya seleccione un quejido con una cantidad de elementos que es potencia de 2
-%sound(moan,fs) %por si quieren escuchar el quejido (esta 10 veces mas rapido de lo real)
-
 fs = fs/10;     %calculo la verdadera frecuencia (la que da matlab esta para que se pueda escuchar)
-N = length(moan); % cantidad de elementos
+N = length(x); % cantidad de elementos
 
-t = (0:1/fs:(length(moan)-1)/fs); %calculo los tiempos de las muestras
+t = (0:1/fs:(length(x)-1)/fs); %calculo los tiempos de las muestras
 subplot(2,1,1)
-plot(t,moan)
+plot(t,x)
 xlabel('Tiempo (segundos)')
 ylabel('Amplitud')
 xlim([0 t(end)])
 subplot(2,1,2)
 
 f = (0:N-1)*(fs/N); %calculo todas las frecuencias de las que tengo informacion
-y = fft(moan);
+y = fft(x);
 power = abs(y).^2/N; %calculo densidad de potencia
 
 plot(f(1:floor(N/2)),power(1:floor(N/2)),'LineWidth',1.5) %el floor esta para solo incluir las frecuencias menores a pi si N es par
 xlabel('Frecuencia (Hz)')
 ylabel('Potencia')
 %% Ejemplo Ecolocación
+
 figure()
 load batsignal; %cargo los datos
 fs = 1/DT; %calculo frecuencia a partir del intervalo de muestreo
@@ -137,6 +144,7 @@ plot(f(1:floor(N/2)),power(1:floor(N/2)),'LineWidth',1.5) %el floor esta para so
 xlabel('Frecuencia (Hz)')
 ylabel('Potencia')
 %% Ejemplo Ecolocación, ventanas y STFT
+
 figure()
 %cargo los datos;
 load batsignal;
@@ -176,6 +184,7 @@ legend(sprintf('ventana de %d muestras',ventana),...
     sprintf('ventana de %d muestras',N))
 xlim([-2000,2000])
 %% Espectrograma de ecolocacion
+
 %cargo los datos
 load batsignal;
 fs = 1/DT;
