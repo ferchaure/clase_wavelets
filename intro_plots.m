@@ -10,10 +10,9 @@ plot(xcont,f(xcont))
 xlim([0.5,10.5])
 %ylim([0,1.1])
 xlabel('Tiempo')
-ylabel('x[n]')
+ylabel('')
 grid on
-legend('Señal Digitalizada','Señal Continua')
-title('Ejemplo Muestreo de Señal')
+legend('x[n]','f(t)')
 %% Ejemplo Muestreo valido
 figure()
 ts = 0.5; %frecuencia de muestreo
